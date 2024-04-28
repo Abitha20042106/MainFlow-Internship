@@ -1,0 +1,18 @@
+{
+  "name": "task2",
+  "version": "1.0.0",
+  "description": "My Express JS Application",
+  "main": "Express.js",
+  "scripts": {
+    "start": "node app"
+  },
+  "author": "Rocking Support",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.19.2",
+    "mysql": "^2.18.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}
