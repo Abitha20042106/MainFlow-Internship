@@ -1,42 +1,87 @@
-import React, { useState } from 'react';
-import './App.css';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const App = () => {
-  // State to keep track of user interactions
-  const [clickCount, setClickCount] = useState(0);
-  const [inputValue, setInputValue] = useState('');
+  const [items, setItems] = useState([]);
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
 
-  const handleButtonClick = () => {
-    // Update the click count
-    setClickCount(prevCount => prevCount + 1);
+  useEffect(() => {
+    fetchItems();
+  }, []);
+
+  const fetchItems = async () => {
+    try {
+      const response = await axios.get('/api/items');
+      setItems(response.data);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
-  const handleInputChange = (event) => {
-    // Update the input value
-    setInputValue(event.target.value);
+  const addItem = async () => {
+    try {
+      await axios.post('/api/items', { name, description });
+      fetchItems();
+      setName('');
+      setDescription('');
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const deleteItem = async (id) => {
+    try {
+      await axios.delete(`/api/items/${id}`);
+      fetchItems();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const updateItem = async (id, updatedItem) => {
+    try {
+      await axios.put(`/api/items/${id}`, updatedItem);
+      fetchItems();
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
-    <div className="app">
-      <header className="header">
-        <h1>Welcome to Our Website</h1>
-      </header>
-      <main className="main">
-        <section className="section">
-          <h2>User Interaction Section</h2>
-          <p>Click the button to interact:</p>
-          <button onClick={handleButtonClick}>Click Me</button>
-          <p>You have clicked the button <strong>{clickCount}</strong> times.</p>
-          <p>Enter something:</p>
-          <input
-            type="text"
-            value={inputValue}
-            onChange={handleInputChange}
-            placeholder="Type here..."
-          />
-          <p>You typed: <strong>{inputValue}</strong></p>
-        </section>
-      </main>
+    <div>
+      <h1>Wish List</h1>
+      <input
+        type="text"
+        placeholder="Name"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+      />
+      <input
+        type="text"
+        placeholder="Description"
+        value={description}
+        onChange={(e) => setDescription(e.target.value)}
+      />
+      <button onClick={addItem}>Add Item</button>
+      <ul>
+        {items.map((item) => (
+          <li key={item._id}>
+            {item.name} - {item.description}{' '}
+            <button onClick={() => deleteItem(item._id)}>Delete</button>{' '}
+            <button
+              onClick={() =>
+                updateItem(item._id, {
+                  name: 'Updated Name',
+                  description: 'Updated Description',
+                })
+              }
+            >
+              Update
+            </button>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 };
